@@ -69,14 +69,14 @@ func numberOfWaysWithStepsLimits(numberOfSteps: Int) -> Int{
             if i - j >= 0 {
                 total += nums[i - j]
             }
-            nums[i] = total
         }
+        nums[i] = total
         
     }
     return nums[numberOfSteps]
 }
 
-numberOfWaysWithStepsLimits(numberOfSteps: 5)
+numberOfWaysWithStepsLimits(numberOfSteps: 6)
 
 
 
