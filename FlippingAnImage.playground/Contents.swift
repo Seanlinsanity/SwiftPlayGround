@@ -43,11 +43,9 @@ func flippingImage(imageMatrix: inout [[Int]]) -> [[Int]]{
             currentIndex += 1
             swapIndex = numbersInRow - 1 - currentIndex
         }
-        
     }
     
-    return imageMatrix
-    
+    return imageMatrix    
 }
 
 print(flippingImage(imageMatrix: &imageMatrix))
