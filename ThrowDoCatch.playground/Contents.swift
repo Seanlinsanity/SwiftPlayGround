@@ -19,33 +19,36 @@ enum LoginError: Error{
 
 func login() throws {
     let email = "email@gmail.com"
-    let password = "1238"
+    let password = "1238111"
     
     if email.isEmpty || password.isEmpty{
         throw LoginError.informationIncompletion
-    }
-
-    if !email.isValidEmail{
+    }else if !email.isValidEmail{
         throw LoginError.invalidEmail
-    }
-
-    if password.count < 5 {
+    }else if password.count < 5 {
         throw LoginError.invalidPassword
     }
 }
 
 do {
     try login()
-    print(123)
-}catch LoginError.informationIncompletion{
-    print("information imcompletion")
-}catch LoginError.invalidEmail{
-    print("invalid email")
-}catch LoginError.invalidPassword{
-    print("invalid password")
-}catch let error{
-    print("other error", error)
+    print("successfully login")
+}catch let loginErr {
+    print(loginErr)
 }
+
+//do {
+//    try login()
+//    print(123)
+//}catch LoginError.informationIncompletion{
+//    print("information imcompletion")
+//}catch LoginError.invalidEmail{
+//    print("invalid email")
+//}catch LoginError.invalidPassword{
+//    print("invalid password")
+//}catch let error{
+//    print("other error", error)
+//}
 
 
 

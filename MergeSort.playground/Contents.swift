@@ -11,6 +11,8 @@ func mergeSort(numbersArray: [Int]) -> [Int] {
     let rightArray = Array(numbersArray[numbersArray.count/2..<numbersArray.count])
     
     print(leftArray, rightArray)
+    
+    //critical point
     return merge(leftArray: mergeSort(numbersArray: leftArray), rightArray: mergeSort(numbersArray: rightArray))
 }
 
@@ -32,13 +34,7 @@ func merge(leftArray: [Int], rightArray: [Int]) -> [Int]{
         }
     }
     
-    if left.count != 0 {
-        mergeArray += left
-    }else if right.count != 0 {
-        mergeArray += right
-    }
-    
-    return mergeArray
+    return mergeArray + left + right
 }
 
 
