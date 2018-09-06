@@ -9,8 +9,7 @@ class Node {
 
     init(value: Int) {
         self.value = value
-        self.right = nil
-        self.left = nil
+
     }
     
 }
