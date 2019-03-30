@@ -2,11 +2,11 @@
 
 import UIKit
 
-func mostCommonNameInArray(array: [String]) -> String {
+func mostCommonNameInNames(_ names: [String]) -> String {
     
     var nameCountDictionary = [String: Int]()
     
-    for name in array {
+    for name in names {
         if let count = nameCountDictionary[name] {
             nameCountDictionary[name] = count + 1
         }else{
@@ -34,6 +34,6 @@ func mostCommonNameInArray(array: [String]) -> String {
     return mostCommonName
 }
 
-let name = ["Sean", "Stephen", "James","Jacky","Parker","Klay","Jacky", "James","Kobe", "Jacky", "James","Allen", "James"]
+let names = ["Sean", "Stephen", "James","Jacky","Parker","Klay","Jacky", "James","Kobe", "Jacky", "James","Allen", "James"]
 
-mostCommonNameInArray(array: name)
+mostCommonNameInNames(names)

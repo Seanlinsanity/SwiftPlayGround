@@ -20,9 +20,9 @@ func reverseWordsInSentence(sentence: String) -> (String){
             let character = word.characters.count
             print(character)
             let reverseWord = String(word.characters.reversed())
-            newSentence += reverseWord.stringByRemoveVowels()
+//            newSentence += reverseWord.stringByRemoveVowels()
         }else{
-            newSentence += word.stringByRemoveVowels()
+//            newSentence += word.stringByRemoveVowels()
         }
     }
     return newSentence
