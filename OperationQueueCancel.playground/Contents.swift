@@ -67,6 +67,15 @@ class DownloadTaskOperation: Operation {
         state = .isExecuting
         self.task.resume()
     }
+    
+    //6.
+    override func cancel() {
+        super.cancel()
+        
+        if (state == .isExecuting) {
+            task.cancel()
+        }
+    }
        
 }
 
