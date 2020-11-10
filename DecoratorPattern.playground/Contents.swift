@@ -65,15 +65,21 @@ class Soup: Item {
 }
 
 
-var order = Order()
-var drink = Drink()
-var salad = Salad()
-var soup = Soup()
+let order = Order()
+let drink = Drink()
+let salad = Salad()
+let soup = Soup()
 
 drink.decorate(order: order)
 salad.decorate(order: drink)
 soup.decorate(order: salad)
 soup.show()
+
+print(drink.order === order)
+print(salad.order === drink)
+print(soup.order === salad)
+
+print(soup.order === order)
 
 class SimpleSet: Item {
 
