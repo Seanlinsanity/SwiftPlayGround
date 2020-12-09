@@ -1,7 +1,7 @@
 import UIKit
 import CryptoKit
 
-let str = "I LOVE YOU"
+let message = "I LOVE YOU"
 
 func randomHashItem(item: String) -> Int {
   var hasher = Hasher()
@@ -9,7 +9,7 @@ func randomHashItem(item: String) -> Int {
   return hasher.finalize()
 }
 
-print("randomly generated :", randomHashItem(item: str))
+print("randomly generated :", randomHashItem(item: message))
 
 func shaHashItem(item: String) -> SHA256.Digest?{
     if let data = item.data(using: .utf8) {
@@ -19,12 +19,12 @@ func shaHashItem(item: String) -> SHA256.Digest?{
     return nil
 }
 
-print(String(describing: shaHashItem(item: str)))
+print(String(describing: shaHashItem(item: message)))
 
 let key256 = SymmetricKey(size: .bits256)
 
 func hashSignItem<T:HashFunction>(item: String) -> HashedAuthenticationCode<T>? {
-    if let data = str.data(using: .utf8) {
+    if let data = message.data(using: .utf8) {
         let shaMAC = HMAC<T>.authenticationCode(
             for: data, using: key256)
         return shaMAC
@@ -32,9 +32,9 @@ func hashSignItem<T:HashFunction>(item: String) -> HashedAuthenticationCode<T>? 
     return nil
 }
 
-let sha512AuthCode: HashedAuthenticationCode<SHA512>? = hashSignItem(item: str)
+let sha512AuthCode: HashedAuthenticationCode<SHA512>? = hashSignItem(item: message)
 print(String(describing: sha512AuthCode))
-let sha256AuthCode: HashedAuthenticationCode<SHA256>? = hashSignItem(item: str)
+let sha256AuthCode: HashedAuthenticationCode<SHA256>? = hashSignItem(item: message)
 print(String(describing: sha256AuthCode))
 
 func produceHashData<T: HashFunction>(code: HashedAuthenticationCode<T>?) -> Data {
@@ -50,22 +50,21 @@ let sha256AuthCodeData = produceHashData(code: sha256AuthCode)
 
 func validateData<T: HashFunction>(hasher: T.Type, authCode: Data, str: String) {
     guard let data = str.data(using: .utf8) else { return }
-    if HMAC<T>.isValidAuthenticationCode(authCode,
-                                              authenticating: data, using: key256) {
+    if HMAC<T>.isValidAuthenticationCode(authCode, authenticating: data, using: key256) {
         print("The message authentication code is validating the data: (\(data))")
     }
     else { print("not valid") }
 }
 
-validateData(hasher:SHA512.self, authCode: sha512AuthCodeData, str: str)
-validateData(hasher:SHA256.self ,authCode: sha256AuthCodeData, str: str)
+validateData(hasher:SHA512.self, authCode: sha512AuthCodeData, str: message)
+validateData(hasher:SHA256.self ,authCode: sha256AuthCodeData, str: message)
 
 let mySigningPrivateKey = Curve25519.Signing.PrivateKey()
 let mySigningPublicKeyData =
   mySigningPrivateKey.publicKey.rawRepresentation
 
-func testServerKeySignature() {
-    if let data = str.data(using: .utf8) {
+func testKeySignature() {
+    if let data = message.data(using: .utf8) {
         let signatureForData = try! mySigningPrivateKey.signature(for: data)
         let digest512 = SHA512.hash(data: data)
         let signatureForDigest = try! mySigningPrivateKey.signature(
@@ -79,7 +78,6 @@ func testServerKeySignature() {
         if publicKey.isValidSignature(signatureForDigest,
           for: Data(digest512)) {
           print("Data received == data sent.")
-          UIImage(data: data)
         }
     }
 }
@@ -92,6 +90,8 @@ let clientPublicKeyData = clientPrivateKey.publicKey.rawRepresentation
 
 let protocolSalt = "Voldemort's Horcruxes".data(using: .utf8)!
 
+
+//Encryption
 let clientPublicKey = try! Curve25519.KeyAgreement.PublicKey(
   rawRepresentation: clientPublicKeyData)
 let serverSharedSecret = try! serverPrivateKey.sharedSecretFromKeyAgreement(
@@ -99,7 +99,9 @@ let serverSharedSecret = try! serverPrivateKey.sharedSecretFromKeyAgreement(
 let serverSymmetricKey = serverSharedSecret.hkdfDerivedSymmetricKey(
   using: SHA256.self, salt: protocolSalt,
   sharedInfo: Data(), outputByteCount: 32)
+let encryptedData = try! ChaChaPoly.seal(message.data(using: .utf8)!, using: serverSymmetricKey).combined
 
+//Decryption
 let serverPublicKey = try! Curve25519.KeyAgreement.PublicKey(
   rawRepresentation: serverPublicKeyData)
 let clientSharedSecret = try! clientPrivateKey.sharedSecretFromKeyAgreement(
@@ -107,8 +109,16 @@ let clientSharedSecret = try! clientPrivateKey.sharedSecretFromKeyAgreement(
 let clientSymmetricKey = clientSharedSecret.hkdfDerivedSymmetricKey(
   using: SHA256.self, salt: protocolSalt,
   sharedInfo: Data(), outputByteCount: 32)
-
+let sealedBox = try! ChaChaPoly.SealedBox(combined: encryptedData)
+let decryptedData = try! ChaChaPoly.open(sealedBox, using: clientSymmetricKey)
+let decryptedMessage = String(data: decryptedData, encoding: .utf8)
 
 if serverSymmetricKey == clientSymmetricKey {
   print("SERVER and CLIENT have the same symmetric key.")
+}
+
+if message == decryptedMessage {
+    print("decrypt message data successfully")
+} else {
+    print("failed to decrypt message data")
 }
