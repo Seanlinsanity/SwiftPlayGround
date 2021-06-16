@@ -3,6 +3,30 @@ import CryptoKit
 
 let message = "I LOVE YOU"
 
+//generate Symmetric Key
+let key = SymmetricKey(size: .bits256)
+
+do {
+    //encrypt plaintext
+    let encryptedData = try AES.GCM.seal(message.data(using: .utf8) ?? Data(), using: key)
+    let encryptedMessage = encryptedData.ciphertext.base64EncodedString()
+    print("Encrypted message: \(encryptedMessage)")
+
+    //decrypt data
+    let sealedBoxRestored = try AES.GCM.SealedBox(nonce: encryptedData.nonce, ciphertext: encryptedData.ciphertext, tag: encryptedData.tag)
+    let decryptionData = try AES.GCM.open(sealedBoxRestored, using: key)
+    let decrypedMessage = String(data: decryptionData, encoding: .utf8) ?? "null"
+    print("Decrypted message: \(decrypedMessage)")
+    if decrypedMessage == message {
+        print("validate message success")
+    } else {
+        print("validate message failure")
+    }
+    
+} catch let error {
+    print(error)
+}
+
 func randomHashItem(item: String) -> Int {
   var hasher = Hasher()
   item.hash(into: &hasher)
@@ -81,6 +105,8 @@ func testKeySignature() {
         }
     }
 }
+
+testKeySignature()
 
 
 let serverPrivateKey = Curve25519.KeyAgreement.PrivateKey()
