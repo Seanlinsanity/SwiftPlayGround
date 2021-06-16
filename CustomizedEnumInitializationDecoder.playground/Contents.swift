@@ -44,6 +44,10 @@ enum ProductType: String, Codable {
         }
     }
     
+    func encode(to encoder: Encoder) throws {
+        return try code.encode(to: encoder)
+    }
+    
     init(from decoder: Decoder) throws {
         let contianter = try decoder.singleValueContainer()
         let decoded = try contianter.decode(RawValue.self)
@@ -101,5 +105,7 @@ print(productCode, productCode?.code)
 let productCode1 = ProductType(rawValue: "macBook_code_stg")
 print(productCode1, productCode1?.code)
 
+let macbook = Product(type: .macBook)
 let productType = ProductType.macBook
-print(productType.code)
+let jsonVal = try? JSONEncoder().encode(macbook)
+print(String.init(data: jsonVal ?? Data(), encoding: .utf8))
