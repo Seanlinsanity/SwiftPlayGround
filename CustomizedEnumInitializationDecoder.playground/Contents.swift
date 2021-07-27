@@ -6,7 +6,7 @@ enum Environment {
     case prd
 }
 
-let env = Environment.dev
+let env = Environment.stg
 
 enum ProductType: String, Codable {
     
@@ -104,6 +104,9 @@ print(productCode, productCode?.code)
 
 let productCode1 = ProductType(rawValue: "macBook_code_stg")
 print(productCode1, productCode1?.code)
+
+let productCode2 = ProductType(rawValue: "123")
+print(productCode2, productCode2?.code)
 
 let macbook = Product(type: .macBook)
 let productType = ProductType.macBook
