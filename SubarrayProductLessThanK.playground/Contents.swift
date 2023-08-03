@@ -1,49 +1,89 @@
 import UIKit
 /*
-Your are given an array of positive integers nums.
+ Given an array of integers nums and an integer k, return the number of contiguous subarrays where the product of all the elements in the subarray is strictly less than k.
 
-Count and print the number of (contiguous) subarrays where the product of all the elements in the subarray is less than k.
+  
 
-Example 1:
-Input: nums = [10, 5, 2, 6], k = 100
-Output: 8
-Explanation: The 8 subarrays that have product less than 100 are: [10], [5], [2], [6], [10, 5], [5, 2], [2, 6], [5, 2, 6].
-Note that [10, 5, 2] is not included as the product of 100 is not strictly less than k.
-Note:
+ Example 1:
 
-0 < nums.length <= 50000.
-0 < nums[i] < 1000.
-0 <= k < 10^6.
+ Input: nums = [10,5,2,6], k = 100
+ Output: 8
+ Explanation: The 8 subarrays that have product less than 100 are:
+ [10], [5], [2], [6], [10, 5], [5, 2], [2, 6], [5, 2, 6]
+ Note that [10, 5, 2] is not included as the product of 100 is not strictly less than k.
+ Example 2:
+
+ Input: nums = [1,2,3], k = 0
+ Output: 0
+  
+
+ Constraints:
+
+ 1 <= nums.length <= 3 * 104
+ 1 <= nums[i] <= 1000
+ 0 <= k <= 106
 */
 
-func numSubarrayProductLessThanK(_ nums: [Int], _ k: Int) -> Int {
-    var prefixNums = [Double]()
-    var sum: Double = 0
-    
-    for i in 0...nums.count - 1 {
-        prefixNums.append(sum)
-        sum += log(Double(nums[i]))
-    }
-    prefixNums.append(sum)
-    
-    // print(prefixNums)
-    var count = 0
-    for i in 0...prefixNums.count - 1{
-        var low = i + 1
-        var high = prefixNums.count
-        while(low < high) {
-            let min = (low + high) / 2
-            if prefixNums[min] < prefixNums[i] + log(Double(k)) - 10e-9 {
-                low = min + 1
-            }else{
-                high = min
+class Solution {
+    func numSubarrayProductLessThanK(_ nums: [Int], _ k: Int) -> Int {
+        // edge case
+        if nums.count == 1 { return nums[0] < k ? 1 : 0 }
+
+        var result = 0, left = 0, right = 0, current = 1
+
+        while right < nums.count {
+            current *= nums[right]
+
+            while current >= k && left <= right {
+                current /= nums[left]
+                left += 1
             }
-            print(low, high)
+
+            result += (right - left + 1)
+            right += 1
         }
-        count += (low - i - 1)
+
+        return result
     }
-    return count
     
+    func numSubarrayProductLessThanK2(_ nums: [Int], _ k: Int) -> Int {
+        // edge case
+        if nums.count == 1 { return nums[0] < k ? 1 : 0 }
+
+        var result = 0, left = 0, right = 0, current = 1
+
+        while left < nums.count { // l=3,r=3 //l=0,r=0
+            current *= nums[right] // current=1
+            while current < k && right < nums.count {
+                if right == nums.count - 1 {
+                    break
+                }
+
+                right += 1 // r=3
+                current *= nums[right] // 60
+            }
+
+            if current < k {
+                result += (right - left + 1)  // result=7+1
+            } else {
+                result += (right - left) // result = 0
+            }
+
+            if left == right {
+                right += 1
+            } else {
+                current /= nums[right] // 0
+            }
+            current /= nums[left]
+            left += 1
+        }
+
+        return result
+    }
 }
 
-numSubarrayProductLessThanK([10, 5, 2, 6], 100)
+Solution().numSubarrayProductLessThanK([10, 5, 2, 6], 100)
+Solution().numSubarrayProductLessThanK([1, 2, 3], 0)
+
+Solution().numSubarrayProductLessThanK2([10, 5, 2, 6], 100)
+Solution().numSubarrayProductLessThanK2([1, 2, 3], 0)
