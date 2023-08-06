@@ -51,9 +51,28 @@ class Solution {
 
         return amountResult[amount]
     }
+    
+    func coinChange2(_ coins: [Int], _ amount: Int) -> Int {
+        var dp = Array(repeating: Int.max, count: amount + 1)
+        dp[0] = 0
+        for num in 0...amount {
+            for coin in coins {
+                if num - coin >= 0 {
+                    dp[num] = min(dp[num], dp[num - coin] != Int.max ? 1 + dp[num - coin] : Int.max)
+                }
+            }
+        }
+
+        return dp[amount] == Int.max ? -1 : dp[amount]
+    }
+
 
 }
 
 Solution().coinChange([1,2,5], 11)
 Solution().coinChange([2], 3)
 Solution().coinChange([1], 0)
+
+Solution().coinChange2([1,2,5], 11)
+Solution().coinChange2([2], 3)
+Solution().coinChange2([1], 0)
