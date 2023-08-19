@@ -49,4 +49,38 @@ func isPalindrome(_ head: ListNode?) -> Bool {
 }
 
 
+func isPalindromeOptimal(_ head: ListNode?) -> Bool {
+    guard let head = head else { return false }
+
+    var slow: ListNode? = head
+    var fast: ListNode? = head
+    while fast != nil && fast?.next != nil {
+        slow = slow?.next
+        fast = fast?.next?.next
+    }
+
+    var prev: ListNode?
+    var current: ListNode? = slow
+    while current != nil {
+        let temp = current?.next
+        current?.next = prev
+        prev = current
+        current = temp
+    }
+
+    var rightNodeList: ListNode? = prev
+    var leftNodeList: ListNode? = head
+
+    while rightNodeList != nil {
+        if leftNodeList?.val != rightNodeList?.val {
+            return false
+        }
+
+        rightNodeList = rightNodeList?.next
+        leftNodeList = leftNodeList?.next
+    }
+
+    return true
+}
+
 
